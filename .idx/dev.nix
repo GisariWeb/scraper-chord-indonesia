@@ -11,6 +11,8 @@
   # Sets environment variables in the workspace
   env = {
     PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
+    DISABLE_AUTO_OPEN = "1";
+    VERCEL_TOKEN = "Z8Un8bphiKsQpN36AB1NXM6H";
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
