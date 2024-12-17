@@ -3,7 +3,6 @@ dotenv.config();
 
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import puppeteer from 'puppeteer-core';
 
 const theUrl = process.env.CHORD_URL;
 export async function getLirik(title) {
@@ -132,38 +131,38 @@ export async function searchChord(keyword) {
     }
 }
 
-async function getGoogleSearchWidget(url) {
-    const browser = await puppeteer.launch(
-        { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }
-    );
-    const page = await browser.newPage();
-    try {
-        await page.goto(url, { waitUntil: 'networkidle0' });
+// async function getGoogleSearchWidget(url) {
+//     const browser = await puppeteer.launch(
+//         { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }
+//     );
+//     const page = await browser.newPage();
+//     try {
+//         await page.goto(url, { waitUntil: 'networkidle0' });
 
-        // Debugging: Check if the element exists at all
-        const elementExists = await page.evaluate(() => {
-            return document.querySelector('.entry-content') !== null;
-        });
-        console.log('Element exists:', elementExists);
+//         // Debugging: Check if the element exists at all
+//         const elementExists = await page.evaluate(() => {
+//             return document.querySelector('.entry-content') !== null;
+//         });
+//         console.log('Element exists:', elementExists);
 
-        // Debugging: If element doesn't exist, log the page content
-        if (!elementExists) {
-            console.log('Page content:', await page.content());
-        }
+//         // Debugging: If element doesn't exist, log the page content
+//         if (!elementExists) {
+//             console.log('Page content:', await page.content());
+//         }
 
-        await page.waitForSelector('.gsc-wrapper', { timeout: 60000 });
+//         await page.waitForSelector('.gsc-wrapper', { timeout: 60000 });
 
-        const searchWidgetHtml = await page.$eval('.gsc-wrapper', element => element.outerHTML);
-        console.log(searchWidgetHtml);
+//         const searchWidgetHtml = await page.$eval('.gsc-wrapper', element => element.outerHTML);
+//         console.log(searchWidgetHtml);
 
-        return searchWidgetHtml;
-    }
-    catch (ex) {
-        console.log(ex);
-    }
-    finally {
-        await browser.close();
-    }
-}
+//         return searchWidgetHtml;
+//     }
+//     catch (ex) {
+//         console.log(ex);
+//     }
+//     finally {
+//         await browser.close();
+//     }
+// }
 
 
