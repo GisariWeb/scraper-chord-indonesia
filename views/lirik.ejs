@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Lirik</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-size: calc(14px + 0.5vw);
+      font-family: "Roboto Mono", monospace;
+    }
+    h1.title {
+      font-size : 1.5em;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    pre {
+      line-height: 1.8em;
+    }
+
+    .roboto-mono {
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    .showTip {
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .toolbar {
+      z-index: 10;
+      position: sticky;
+      top: 0;
+      left: 0;
+      justify-items: center;
+    }
+
+    ul#the-chords {
+      margin: 0;
+      padding: 8px 8px 0 0;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      overflow-x: auto;
+      list-style: none;
+      background: white;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    ul#the-chords::-webkit-scrollbar {
+      display: none;
+    }
+
+    ul#the-chords li {
+      flex: 0 0 auto;
+      margin: 4px;
+    }
+
+    ul#the-chords li:last-child {
+      margin-right: 20px;
+    }
+
+    ul#the-chords li img {
+      width: 60vw;
+      height: auto;
+      border-radius: 20px;
+    }
+
+    ul#the-chords li.selected {
+      border: 5px solid orangered;
+      border-radius: 20px;
+    }
+
+    ul.transpose-tool {
+      margin: 12px 0;
+      padding : 0;
+      display: flex;
+      flex-direction: row;
+      list-style: none;
+    }
+
+    ul.transpose-tool li {
+      border: 2px solid grey;
+      padding: 4px 8px;
+      border-radius: 5px;
+      margin: 0 1.5vw;
+      background-color: white;
+      cursor: pointer;
+      font-size: calc(12px + 0.5vw);
+    }
+
+    ul.transpose-tool li.chord-transpose-up {
+      border-radius: 5px 0 0 5px;
+      margin: 0 0 0 1.5vw;
+    }
+
+    ul.transpose-tool li.chord-transpose-down {
+      border-radius: 0 5px 5px 0;
+      margin: 0 1.5vw 0 -1px;
+    }
+
+    ul.transpose-tool li.chord-switch::after {
+      content: " OFF ";
+    }
+
+    ul.transpose-tool li.chord-switch.selected::after {
+      content: " ON ";
+    }
+
+    ul.transpose-tool li.chord-autoscroll::after {
+      content: " OFF ";
+    }
+
+    ul.transpose-tool li.chord-autoscroll.selected::after {
+      content: " ON ";
+    }
+
+    ul.transpose-tool li.selected {
+      background-color: greenyellow;
+    }
+
+    ul.scroller-tool {
+      display: flex;
+      flex-direction: row;
+      list-style: none;
+      border: 2px solid grey;
+      border-radius: 5px;
+      margin: 0;
+      padding: 0;
+    }
+
+    ul.scroller-tool li {
+      width: 10vw;
+      height: 5vw;
+      text-align: center;
+      align-content: center;
+      cursor: pointer;
+      border-right: 2px solid grey;
+      font-size: calc(12px + 0.5vw);
+    }
+
+    ul.scroller-tool li:last-child {
+      border-right: none;
+    }
+
+    ul.scroller-tool li.selected {
+      background-color: greenyellow !important;
+    }
+  </style>
+  <script async type="text/javascript" src="https://www.scales-chords.com/api/scales-chords-api.js"></script>
+</head>
+
+<body>
+  <h1 class="title">
+    <%=title %>
+  </h1>
+  <!-- 
+    Contoh 
+    <ins class="scales_chords_api" output="image" orientation="vertical" chord="D#m\E" instrument="guitar"></ins>
+  <ins class="scales_chords_api" chord="D" instrument="guitar" tuning="DADGBE"></ins> -->
+
+  <div class="toolbar">
+    <ul id="the-chords"></ul>
+    <ul class="transpose-tool">
+      <li class="chord-transpose-up" title="Transpose Up">⬆️🎵</li>
+      <li class="chord-transpose-down" title="Transpose Up">🎵⬇️</li>
+      <li class="chord-switch selected" title="On/Off Chord">📴 Chord</li>
+      <li class="chord-autoscroll" title="Srolling Lyrics">📜 Autoscroll</li>
+    </ul>
+    <ul class="scroller-tool hidden">
+      <li class="autoscroll-stop selected">Stop</li>
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+      <li>4</li>
+      <li>5</li>
+    </ul>
+  </div>
+  <pre class="roboto-mono"><%- lyrics %></pre>
+
+  <script type="text/javascript">
+    function getChordImages() {
+      var chords = [...new Set([...document.getElementsByClassName('showTip')].map((v) => v.text))];
+      var chordElement = document.getElementById("the-chords");
+
+      // console.log(chords, chordElement);
+
+      chordElement.innerHTML = '';
+
+      chords.forEach((item) => {
+        const chord = `<li><ins class="scales_chords_api" chord="${item}" instrument="guitar" /></li>`;
+        // console.log(chord);
+        chordElement.insertAdjacentHTML('beforeend', chord);
+      });
+
+      // Get all list items
+      const listItems = document.querySelectorAll('ul.scroller-tool li');
+
+      // Calculate color step
+      const colorStep = 255 / (listItems.length - 1); // Divide 255 (max RGB value) by the number of steps
+
+      // Apply background colors
+      listItems.forEach((item, index) => {
+        const redValue = 255; // Decrease red value for gradient
+        const greenValue = 255 - Math.round(colorStep * index);
+        const blueValue = 255 - Math.round(colorStep * index);
+        const color = `rgb(${redValue}, ${greenValue}, ${blueValue})`; // Create RGB color string
+
+        item.style.backgroundColor = color; // Apply color as inline style
+      });
+
+      try {
+        scales_chords_api_onload();
+      }
+      catch { }
+    }
+
+    getChordImages();
+
+  </script>
+
+  <script>
+    const chordElement = document.getElementById("the-chords");
+    const preElement = document.querySelector('pre.roboto-mono');
+
+    preElement.addEventListener('click', function (event) {
+      // console.log(event);
+      if (event.target.classList.contains('showTip')) {
+        const clickedChord = event.target.textContent;
+        const chordElements = chordElement.querySelectorAll('li');
+
+        chordElements.forEach(element => {
+          const chordIns = element.querySelector('.scales_chords_api');
+          element.classList.remove('selected');
+          if (chordIns && chordIns.getAttribute('chord') === clickedChord) {
+            // console.log(element);
+            element.classList.add('selected');
+            element.scrollIntoView({
+              behavior: 'smooth', block: 'nearest',
+              inline: 'center'
+            });
+          }
+        });
+      }
+    });
+
+  </script>
+
+  <script>
+    const notes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
+
+    function transposeChord(chord, steps) {
+      // console.log("Original chord:", chord); // Log original chord
+      // Extract chord root and type
+      let [, root, accidental, type] = /([A-G])([#b]?)(\w*)/.exec(chord);
+
+      // Handle invalid chords
+      let rootIndex = notes.indexOf(root + (accidental || ""));
+      if (rootIndex === -1) {
+        return chord;
+      }
+
+      // Calculate transposed index
+      let transposedIndex = (rootIndex + steps + notes.length) % notes.length;
+
+      // Get transposed root
+      let transposedRoot = notes[transposedIndex];
+
+      // Remove accidental for natural notes
+      // if (transposedRoot.length === 2 && transposedRoot[1] === "#") {
+      //   const naturalNotes = ["A", "B", "C", "D", "E", "F", "G"];
+      //   if (naturalNotes.includes(transposedRoot[0])) { // Keep accidental for F#, C# etc.
+      //     transposedRoot = transposedRoot[0]; // Remove only if it results in natural note
+      //   }
+      // } else if (transposedRoot.length === 2 && transposedRoot[1] === 'b') { // Handle flat cases (e.g., Gb)
+      //   const flatNotes = ['Ab', 'Bb', 'Cb', 'Db', 'Eb', 'Fb', 'Gb'];
+      //   if (!flatNotes.includes(transposedRoot)) {
+      //     transposedRoot = transposedRoot[0];
+      //   }
+      // }
+
+      // Handle special cases (B# to C, Cb to B)
+      if (transposedRoot === "B#") {
+        transposedRoot = "C";
+      }
+      if (transposedRoot === "Cb") {
+        transposedRoot = "B";
+      }
+
+      // console.log("Transposed chord:", transposedRoot + type);
+
+      // Return transposed chord
+      return transposedRoot + type;
+    }
+
+
+    function transposeAllChordUp() {
+      const chordElements = document.querySelectorAll('.showTip');
+      // console.log(chordElements);
+      chordElements.forEach(element => {
+        const oldChord = element.textContent;
+        const newChord = transposeChord(oldChord, 1);
+        element.textContent = newChord;
+      });
+
+      getChordImages();
+    }
+    function transposeAllChordDown() {
+      const chordElements = document.querySelectorAll('.showTip');
+      // console.log(chordElements);
+      chordElements.forEach(element => {
+        const oldChord = element.textContent;
+        const newChord = transposeChord(oldChord, -1);
+        element.textContent = newChord;
+      });
+
+      getChordImages();
+    }
+
+    const transposeUpElement = document.querySelector('li.chord-transpose-up');
+    const transposeDownElement = document.querySelector('li.chord-transpose-down');
+    transposeUpElement.addEventListener('click', transposeAllChordUp);
+    transposeDownElement.addEventListener('click', transposeAllChordDown);
+
+    const chordOffElement = document.querySelector('li.chord-switch');
+    chordOffElement.addEventListener('click', () => {
+      chordOffElement.classList.toggle('selected');
+      const chordElements = document.querySelectorAll('.showTip');
+      chordElements.forEach(element => {
+        element.classList.toggle('hidden');
+      });
+
+    });
+
+    const autoscrollElement = document.querySelector('li.chord-autoscroll');
+    const scrollertoolElement = document.querySelector('ul.scroller-tool');
+    autoscrollElement.addEventListener('click', () => {
+      autoscrollElement.classList.toggle('selected');
+      scrollertoolElement.classList.toggle('hidden');
+
+      const chordElements = document.querySelectorAll('.showTip');
+
+      chordElements.forEach(element => {
+        element.classList.toggle('autoscroll');
+      });
+
+      if (!autoscrollElement.classList.contains('selected')) {
+        const scrollStopElement = document.querySelector('li.autoscroll-stop');
+        scrollStopElement.dispatchEvent(new Event('click'));
+      }
+    });
+
+  </script>
+
+  <script>
+    // Get all list items
+    // const scrollerToollistItems = document.querySelectorAll('ul.scroller-tool li');
+
+    // // Add click event listener to each list item
+    // scrollerToollistItems.forEach(item => {
+    //   item.addEventListener('click', () => {
+    //     // Remove 'selected' class from all list items
+    //     scrollerToollistItems.forEach(li => li.classList.remove('selected'));
+
+    //     // Add 'selected' class to the clicked list item
+    //     item.classList.add('selected');
+    //   });
+    // });
+
+        // Get all list items
+    const scrollerToollistItems = document.querySelectorAll('ul.scroller-tool li');
+    let scrollInterval;
+    let scrollSpeed = 100; // Adjust this value to control scrolling speed
+
+    // Add click event listener to each list item
+    scrollerToollistItems.forEach(item => {
+      item.addEventListener('click', () => {
+        // Remove 'selected' class from all list items
+        scrollerToollistItems.forEach(li => li.classList.remove('selected'));
+
+        // Add 'selected' class to the clicked list item
+        item.classList.add('selected');
+
+        clearInterval(scrollInterval); // Clear any existing interval
+
+        if (item.classList.contains('autoscroll-stop')) {
+          return;
+        }
+
+        const speedValues = {
+          '1': 400,
+          '2': 300,
+          '3': 200,
+          '4': 100,
+          '5': 30
+        }
+
+        scrollSpeed = speedValues[item.textContent];
+
+        scrollInterval = setInterval(() => {
+          window.scrollBy(0, 1); // Adjust scrolling speed here
+        }, scrollSpeed);
+      });
+    });
+    
+
+  </script>
+</body>
+
+</html>
