@@ -96,7 +96,7 @@ export async function getListLyricsOfArtist(artistUrl) {
                 url: $(el).attr('href').replace("https://www.chordindonesia.com/", "lirik/")
             })
         });
-        result.sort((a, b) => a.name.localeCompare(b.name));
+        result.sort((a, b) => a.title.localeCompare(b.title));
 
         return result;
     }
