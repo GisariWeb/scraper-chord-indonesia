@@ -13,6 +13,8 @@
     PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
     DISABLE_AUTO_OPEN = "1";
     VERCEL_TOKEN = "Z8Un8bphiKsQpN36AB1NXM6H";
+    SUPABASE_URL = "https://euqjsdkwxswpcpnrieuz.supabase.co";
+    SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV1cWpzZGt3eHN3cGNwbnJpZXV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5MTc0NDcsImV4cCI6MjA1MDQ5MzQ0N30.PO_axIoG--S5KapoHXFAt7iEzWqQKNR31fdcYt5zfT8";
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"

@@ -81,7 +81,7 @@ export async function getListOfArtist(url) {
     }
 }
 
-export async function getListLyricsOfArtist(artistUrl) {
+export async function getStartLyricsListOfArtist(artistUrl) {
     try {
         const url = `${theUrl}/chord/${artistUrl}`;
         console.log(url);
@@ -90,18 +90,60 @@ export async function getListLyricsOfArtist(artistUrl) {
         const list = $('.archives a');
         const result = [];
         list.each((i, el) => {
-            // console.log($(el).attr('href').replace("https://www.chordindonesia.com/", "/lirik/"));
             result.push({
                 title: $(el).text(),
                 url: $(el).attr('href').replace("https://www.chordindonesia.com/", "lirik/")
             })
         });
+
+        let promises = [];
+        const pagination = $('.wp-pagenavi a');
+        pagination.each((i, el) => {
+            // console.log($(el).text(), $(el).attr('href'));
+            if ($(el).text() != "»") {
+                promises.push(getLyricsListOfArtist($(el).attr('href')).then(res => {
+                    // console.log(res);
+                    result.push(...res);
+                }));
+            }
+        });
+
+        await Promise.all(promises);
+        
+
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        console.log(`jumlah lirik : ${result.length}`);
+        return result;
+    }
+    catch (ex) {
+        console.log(ex);
+        throw ex;
+    }
+}
+
+
+export async function getLyricsListOfArtist(artistUrl) {
+    try {
+        // const url = `${theUrl}/chord/${artistUrl}`;
+        const url = artistUrl;
+        console.log(url);
+        const response = await axios.get(url);
+        const $ = cheerio.load(response.data);
+        const list = $('.archives a');
+        const result = [];
+        list.each((i, el) => {
+            result.push({
+                title: $(el).text(),
+                url: $(el).attr('href').replace("https://www.chordindonesia.com/", "lirik/")
+            })
+        });
+
         result.sort((a, b) => a.title.localeCompare(b.title));
 
         return result;
     }
     catch (ex) {
-        console.log(ex);
+        // console.log(ex);
         throw ex;
     }
 }
@@ -132,39 +174,3 @@ export async function searchChord(keyword) {
         throw ex;
     }
 }
-
-// async function getGoogleSearchWidget(url) {
-//     const browser = await puppeteer.launch(
-//         { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }
-//     );
-//     const page = await browser.newPage();
-//     try {
-//         await page.goto(url, { waitUntil: 'networkidle0' });
-
-//         // Debugging: Check if the element exists at all
-//         const elementExists = await page.evaluate(() => {
-//             return document.querySelector('.entry-content') !== null;
-//         });
-//         console.log('Element exists:', elementExists);
-
-//         // Debugging: If element doesn't exist, log the page content
-//         if (!elementExists) {
-//             console.log('Page content:', await page.content());
-//         }
-
-//         await page.waitForSelector('.gsc-wrapper', { timeout: 60000 });
-
-//         const searchWidgetHtml = await page.$eval('.gsc-wrapper', element => element.outerHTML);
-//         console.log(searchWidgetHtml);
-
-//         return searchWidgetHtml;
-//     }
-//     catch (ex) {
-//         console.log(ex);
-//     }
-//     finally {
-//         await browser.close();
-//     }
-// }
-
-

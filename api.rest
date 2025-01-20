@@ -1,0 +1,25 @@
+@hostname = https://3000-idx-sraper-1733797682443.cluster-bec2e4635ng44w7ed22sa22hes.cloudworkstations.dev
+
+### Sign In
+POST {{hostname}}/v1/auth/signin HTTP/1.1
+content-type: application/json
+
+{
+    "email": "chordid@gisari.com",
+    "password": "Ch@rdId"
+}
+
+
+### Test
+POST {{hostname}}/v1/artist HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample3",
+    "url": "https://www.paijo3.com"
+}
+
+
+### Get Artist
+GET {{hostname}}/v1/artist/a32671d0-7e2b-408a-8cfa-35665114b16b HTTP/1.1
+If-None-Match: W/"dd-iJ+iKeG/QJPZtkZitHs88CHmU3U"

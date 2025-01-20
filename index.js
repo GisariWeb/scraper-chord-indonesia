@@ -1,15 +1,38 @@
-import { getLirik, getListLyricsOfArtist, getListOfAlphabet, searchChord } from './crawler.js';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { getLirik, getStartLyricsListOfArtist, getLyricsListOfArtist, getListOfAlphabet, searchChord } from './crawler.js';
+import v1 from './routers/v1/index.js';
+
+const PORT = parseInt(process.env.PORT) || 3000;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
 
+app.use(express.json());
+
+app.use((req, res, next) => {
+  const start = Date.now();
+  const originalSend = res.send.bind(res);
+
+  res.send = (data) => {
+    const duration = Date.now() - start;
+    res.setHeader('X-Response-Time', duration + 'ms');
+    originalSend(data);
+  };
+
+  next();
+});
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+app.use('/v1', v1);
+
+//######### ROUTING START ############
 
 app.get('/', (req, res) => {
   const name = process.env.NAME || 'World';
@@ -53,7 +76,7 @@ app.get('/daftar-isi', async (req, res) => {
 app.get('/daftar-lirik/:artistUrl', async (req, res) => {
   try {
     const artistUrl = req.params.artistUrl;
-    res.send(await getListLyricsOfArtist(artistUrl));
+    res.send(await getStartLyricsListOfArtist(artistUrl));
   }
   catch (ex) {
     res.status(500).send(`Error fetching List of Content : ${ex.message}`);
@@ -67,16 +90,20 @@ app.get('/cari/:query', async (req, res) => {
     const query = req.params.query;
 
     if (!query) {
-      return res.status(400).send('Missing query');
+      return res.status(400).json({ message: 'Missing query' });
     }
-    res.send(await searchChord(query));
+    const data = await searchChord(query);
+    res.json({ message: "Success", data: data });
   }
   catch (ex) {
-    res.status(500).send(`Error Searching Keywords : ${ex.message}`);
+    res.status(500).json({ message: `Error Searching Keywords : ${ex.message}` });
   }
 })
 
-const port = parseInt(process.env.PORT) || 3000;
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`listening on port ${PORT}`);
+});
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Page Not Found' });
 });
