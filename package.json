@@ -17,7 +17,8 @@
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
