@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import favicon from 'serve-favicon';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { getLirik, getStartLyricsListOfArtist, getLyricsListOfArtist, getListOfAlphabet, searchChord } from './crawler.js';
@@ -29,6 +30,9 @@ app.use((req, res, next) => {
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static('public'));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use('/v1', v1);
 
