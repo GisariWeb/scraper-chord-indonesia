@@ -14,7 +14,7 @@
     ],
     "crons" :[
         {
-            "path": "/routes/cron",
+            "path": "/routers/cron",
             "schedule" : "*/10 * * * *"
         }
     ]
