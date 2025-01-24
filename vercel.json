@@ -15,7 +15,7 @@
     "crons": [
         {
             "path": "/routers/cron",
-            "schedule": "*/10 * * * *"
+            "schedule": "0 7 * * *"
         }
     ]
 }
