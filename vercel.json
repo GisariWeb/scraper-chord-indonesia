@@ -14,7 +14,7 @@
     ],
     "crons" :[
         {
-            "path": "/routers/cron",
+            "path": "/v1/artist/a32671d0-7e2b-408a-8cfa-35665114b16b",
             "schedule" : "*/10 * * * *"
         }
     ]
