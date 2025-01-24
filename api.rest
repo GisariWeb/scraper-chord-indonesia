@@ -22,4 +22,4 @@ content-type: application/json
 
 ### Get Artist
 GET {{hostname}}/v1/artist/a32671d0-7e2b-408a-8cfa-35665114b16b HTTP/1.1
-If-None-Match: W/"dd-iJ+iKeG/QJPZtkZitHs88CHmU3U"
+# If-None-Match: W/"dd-iJ+iKeG/QJPZtkZitHs88CHmU3U"
