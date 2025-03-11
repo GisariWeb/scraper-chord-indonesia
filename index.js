@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { getLirik, getStartLyricsListOfArtist, getLyricsListOfArtist, getListOfAlphabet, searchChord } from './crawler.js';
 import v1 from './routers/v1/index.js';
+import { crawlAndSaveToDB } from './routers/cron.js';
+import { listEndpoints } from './content_middleware.js';
 
 const PORT = parseInt(process.env.PORT) || 3000;
 
@@ -103,6 +105,23 @@ app.get('/cari/:query', async (req, res) => {
     res.status(500).json({ message: `Error Searching Keywords : ${ex.message}` });
   }
 })
+
+app.get('/endpoint-list', async (req, res) => {
+  try {
+    // Get the list of endpoints
+    const allEndpoints = listEndpoints(app);
+
+    res.json({ message: "Success", data: allEndpoints });
+    
+  }
+  catch (ex){
+    res.status(500).send(`Error fetching List of Content : ${ex.message}`);
+  }
+  
+
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);

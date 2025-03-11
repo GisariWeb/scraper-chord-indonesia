@@ -25,6 +25,16 @@ const signInWithPassword = async (email, password) => {
     return data.user;
 };
 
+const signInWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+    });
+    if (error) {
+       throw error;
+    }
+    return data;
+};
+
 const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -96,6 +106,19 @@ const insertArtist = async (name, url, img_url, thumb_img_url) => {
     return data
 }
 
+const insertArtists = async (artists) => {
+    const { data, error } = await supabase
+        .from('artist')
+        .insert(artists)
+        .select();
+
+    if (error) {
+        console.log(error)
+        return error
+    }
+    return data
+}
+
 const updateArtist = async (id, name, url, img_url, thumb_img_url) => {
     const { data, error } = await supabase
         .from('artist')
@@ -132,7 +155,15 @@ const deleteArtist = async (id) => {
     return data
 }
 
+
+const insertLog = async (log) => {
+    const { data, error } = await supabase
+        .from('log')
+        .insert(log)
+}
+
 export {
-    signInWithPassword, signOut, getSession, getUser,
-    insertArtist, updateArtist, getArtist, deleteArtist,
+    signInWithPassword, signInWithGoogle, signOut, getSession, getUser,
+    insertArtist, insertArtists, updateArtist, getArtist, deleteArtist,
+    insertLog
 }

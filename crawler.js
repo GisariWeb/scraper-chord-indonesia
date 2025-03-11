@@ -109,7 +109,6 @@ export async function getStartLyricsListOfArtist(artistUrl) {
         });
 
         await Promise.all(promises);
-        
 
         result.sort((a, b) => a.title.localeCompare(b.title));
         console.log(`jumlah lirik : ${result.length}`);
